@@ -11,3 +11,7 @@
 4. $(x+2)(x+3)=0$
 
 $\implies x=-2$ or $x=-3$ 
+
+5. Solution Not Available 
+
+6. Solution Not Available 
