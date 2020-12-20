@@ -23,6 +23,20 @@ import pypandoc
 import os
 from zipfile import ZipFile
 import time
+import QTApp
+
+
+def check_if_all_none(list_of_elem):
+    """ Check if all elements in list are None """
+    if list_of_elem is None:
+        return True
+    else:
+        return False
+    # for elem in list_of_elem:
+    #     if elem is not None:
+    #         return False
+    # return result
+
 
 sg.theme('Reddit')
 
@@ -381,7 +395,7 @@ while True:
         #print(json_list,type(json_list))
         for i in range(MAX_ROWS):
             inputData[i][3]=json_list[i]
-        columm_layout1 =  [[sg.Stretch(),sg.Checkbox('Q No.'+str(inputData[i][0]),key=(i,6)),sg.Stretch(), sg.Text(str(inputData[i][1]),size=(30, 6), pad=(
+        columm_layout1 =  [[sg.Stretch(),sg.Checkbox(str(inputData[i][0]),key=(i,6)),sg.Stretch(), sg.Text(str(inputData[i][1]),size=(30, 6), pad=(
                 1, 1), key=(i, 5)), sg.Stretch(),sg.Text(str(inputData[i][2]),size=(30, 6), pad=(
                         1, 1), key=(i, 11)),sg.Stretch(), sg.Text(str(inputData[i][3]),size=(30, 6), pad=(
                                 1, 1), key=(i, 10)),sg.Stretch()] for i in range(MAX_ROWS)]
@@ -447,12 +461,28 @@ while True:
                         j+=1
                     layout5=[[sg.Text('Make changes into the Question Paper and Solutions if you want (Markdown)')],
                     [sg.Multiline(qpText, key='qp'), sg.Multiline(SolText, key = 'sol')],
-                    [sg.Stretch(),sg.Button('Done'), sg.Stretch()]]
+                    [sg.Stretch(),sg.Button('Preview Question Paper'),sg.Stretch(),sg.Button('Done'), sg.Stretch(),sg.Button('Preview Solutions'), sg.Stretch()]]
                     window5=sg.Window('Edit Question Paper and Solutions',layout5)
                     while True:
                         event5, values5 = window5.read()
                         if event5 == sg.WIN_CLOSED:
                             break
+                        if event5 == 'Preview Question Paper':
+                            qpText = ''
+                            for ch in values5['qp']:
+                                qpText+=str(ch)
+                            html = pypandoc.convert_text(qpText, 'html', format='md', extra_args=['-s'])
+                            #win = sg.popup("Please Wait...")
+                            QTApp.showQP(html)
+                            #app.exec_()
+                        if event5 == 'Preview Solutions':
+                            SolText = ''
+                            for ch in values5['sol']:
+                                SolText+=str(ch)
+                            html = pypandoc.convert_text(SolText, 'html', format='md', extra_args=['-s'])
+                            #win = sg.popup("Please Wait...")
+                            QTApp.showQP(html)
+                            #app.exec_()
                         if event5 == 'Done':
                             qpText = ''
                             SolText = ''
@@ -468,8 +498,14 @@ while True:
                             window6 = sg.Window('Choose output format',layout6, return_keyboard_events=True)
                             while True:
                                 event6, values6 = window6.read()
+                                if event6 == sg.WIN_CLOSED:
+                                    break
                                 if event6 == 'Okay':
                                     window6.close()
+                                    if not (values6[(0,7)] or values6[(1,7)] or values6[(2,7)] or values6[(3,7)] or values6[(0,8)] or values6[(1,8)] or values6[(2,8)] or values6[(3,8)]):
+                                        break
+                                    # if check_if_all_none([values6[(i,7)] for i in range(4)].extend([values6[(i,8)] for i in range(4)])):
+                                    #     break
                                     layout2 = [[
                                         sg.InputText(visible=False, enable_events=True, key='file_path'),
                                         sg.FileSaveAs(
@@ -480,6 +516,8 @@ while True:
                                     window2 = sg.Window('Select Output Destination', layout2)
                                     event2, values2 = window2.read()
                                     window2.close()
+                                    if not values2['file_path'].split('.')[0]:
+                                        break
                                     sg.popup_ok('Your files will be ready in a zip file once the Table window (main window) appears. Please do NOT press anything else till then. Press OK to continue.')
                                     if event2== 'file_path':
                                         OPfile_path = values2['file_path'].split('.')[0]
@@ -494,14 +532,14 @@ while True:
                                         for i in range(3):
                                             if values6[(i+1,7)]:
                                                 try:
-                                                    pypandoc.convert_file(OPfile_path+'QP.md',extensions[i+1] ,outputfile=OPfile_path+'QP.'+extensions[i+1])
+                                                    pypandoc.convert_file(OPfile_path+'QP.md',extensions[i+1] ,outputfile=OPfile_path+'QP.'+extensions[i+1],  extra_args=['-s'])
                                                     file_paths.append(OPfile_path+'QP.'+extensions[i+1])
                                                     #print(i+1)
                                                 except:
                                                     sg.popup('Couldn\'t generate a '+extensions[i+1]+' file. Check your pandoc or TeX installation' )
                                             if values6[(i+1,8)]:
                                                 try:
-                                                    pypandoc.convert_file(OPfile_path+'Sol.md',extensions[i+1] ,outputfile=OPfile_path+'Sol.'+extensions[i+1])
+                                                    pypandoc.convert_file(OPfile_path+'Sol.md',extensions[i+1] ,outputfile=OPfile_path+'Sol.'+extensions[i+1],  extra_args=['-s'])
                                                     file_paths.append(OPfile_path+'Sol.'+extensions[i+1])
                                                     #print(i+1)
                                                 except:
@@ -566,12 +604,28 @@ while True:
                         j+=1
                     layout5=[[sg.Text('Make changes into the Question Paper and Solutions if you want (Markdown)')],
                     [sg.Multiline(qpText, key='qp'), sg.Multiline(SolText, key = 'sol')],
-                    [sg.Stretch(),sg.Button('Done'), sg.Stretch()]]
+                    [sg.Stretch(),sg.Button('Preview Question Paper'),sg.Stretch(),sg.Button('Done'), sg.Stretch(),sg.Button('Preview Solutions'), sg.Stretch()]]
                     window5=sg.Window('Edit Question Paper and Solutions',layout5)
                     while True:
                         event5, values5 = window5.read()
                         if event5 == sg.WIN_CLOSED:
                             break
+                        if event5 == 'Preview Question Paper':
+                            qpText = ''
+                            for ch in values5['qp']:
+                                qpText+=str(ch)
+                            html = pypandoc.convert_text(qpText, 'html', format='md', extra_args=['-s'])
+                            #win = sg.popup("Please Wait...")
+                            QTApp.showQP(html)
+                            #app.exec_()
+                        if event5 == 'Preview Solutions':
+                            SolText = ''
+                            for ch in values5['sol']:
+                                SolText+=str(ch)
+                            html = pypandoc.convert_text(SolText, 'html', format='md', extra_args=['-s'])
+                            #win = sg.popup("Please Wait...")
+                            QTApp.showQP(html)
+                            #app.exec_()
                         if event5 == 'Done':
                             qpText = ''
                             SolText = ''
@@ -587,19 +641,25 @@ while True:
                             window6 = sg.Window('Choose output format',layout6, return_keyboard_events=True)
                             while True:
                                 event6, values6 = window6.read()
+                                if event6 == sg.WIN_CLOSED:
+                                    break
                                 if event6 == 'Okay':
                                     window6.close()
+                                    if not (values6[(0,7)] or values6[(1,7)] or values6[(2,7)] or values6[(3,7)] or values6[(0,8)] or values6[(1,8)] or values6[(2,8)] or values6[(3,8)]):
+                                        break
                                     layout2 = [[
                                         sg.InputText(visible=False, enable_events=True, key='file_path'),
                                         sg.FileSaveAs(
                                             key='file_save',
-                                            file_types=(('Zip File', '.zip'),),  # TODO: better names
+                                            file_types=(('Zip File', '.zip'),),
                                         )
                                     ]]
                                     window2 = sg.Window('Select Output Destination', layout2)
                                     event2, values2 = window2.read()
                                     window2.close()
-                                    sg.popup_ok('Your files will be ready in a zip file once the Table window (main window) appears. Press OK to continue.')
+                                    if not values2['file_path'].split('.')[0]:
+                                        break
+                                    sg.popup_ok('Your files will be ready in a zip file once the Table window (main window) appears. Please do NOT press anything else till then. Press OK to continue.')
                                     if event2== 'file_path':
                                         OPfile_path = values2['file_path'].split('.')[0]
                                         extensions = ['md', 'html', 'tex', 'pdf']
@@ -613,14 +673,14 @@ while True:
                                         for i in range(3):
                                             if values6[(i+1,7)]:
                                                 try:
-                                                    pypandoc.convert_file(OPfile_path+'QP.md',extensions[i+1] ,outputfile=OPfile_path+'QP.'+extensions[i+1])
+                                                    pypandoc.convert_file(OPfile_path+'QP.md',extensions[i+1] ,outputfile=OPfile_path+'QP.'+extensions[i+1],  extra_args=['-s'])
                                                     file_paths.append(OPfile_path+'QP.'+extensions[i+1])
                                                     #print(i+1)
                                                 except:
                                                     sg.popup('Couldn\'t generate a '+extensions[i+1]+' file. Check your pandoc or TeX installation' )
                                             if values6[(i+1,8)]:
                                                 try:
-                                                    pypandoc.convert_file(OPfile_path+'Sol.md',extensions[i+1] ,outputfile=OPfile_path+'Sol.'+extensions[i+1])
+                                                    pypandoc.convert_file(OPfile_path+'Sol.md',extensions[i+1] ,outputfile=OPfile_path+'Sol.'+extensions[i+1],  extra_args=['-s'])
                                                     file_paths.append(OPfile_path+'Sol.'+extensions[i+1])
                                                     #print(i+1)
                                                 except:
