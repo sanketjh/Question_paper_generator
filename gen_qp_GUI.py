@@ -206,7 +206,7 @@ while True:
         ##print(type(json_list[-1][0]))
         for i in range(MAX_ROWS):
             inputData[i][3]=json_list[i]
-        columm_layout1 =  [[sg.Stretch(),sg.Checkbox('Q No.'+str(inputData[i][0]),key=(i,12)),sg.Stretch(), sg.Text(str(inputData[i][1]),size=(30, 6), pad=(
+        columm_layout1 =  [[sg.Stretch(),sg.Checkbox(str(inputData[i][0]),key=(i,12)),sg.Stretch(), sg.Text(str(inputData[i][1]),size=(30, 6), pad=(
                 1, 1), key=(i, 13)), sg.Stretch(),sg.Text(str(inputData[i][2]),size=(30, 6), pad=(
                         1, 1), key=(i, 14)),sg.Stretch(), sg.Text(str(inputData[i][3]),size=(30, 6), pad=(
                                 1, 1), key=(i, 15)),sg.Stretch()] for i in range(MAX_ROWS)]
@@ -222,6 +222,8 @@ while True:
         while True:
             event4, value4 = window4.read()
             #print(event4,value4)
+            if event4 == sg.WIN_CLOSED:
+                break
             if event4 == 'Delete':
                 window4.close()
                 rowsToDelete=[]
@@ -778,6 +780,8 @@ while True:
                 event2, values2 = window2.read()
                 window2.close()
                 #print(event2,values2)
+                if event2 == sg.WIN_CLOSED:
+                    continue
                 if event2 == 'file_path':
                     file_path = values2['file_path']
                     tableName = file_path.split('/')[-1]
@@ -872,6 +876,8 @@ while True:
             event2, values2 = window2.read()
             window2.close()
             #print(event2,values2)
+            if event2 == sg.WIN_CLOSED:
+                continue
             if event2 == 'file_path':
                 file_path = values2['file_path']
                 tableName = file_path.split('/')[-1]
