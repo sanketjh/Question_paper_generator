@@ -50,6 +50,8 @@ window1 = sg.Window('Choose the database', layout1)
 event, values = window1.read()
 window1.close()
 
+qpTextAlt = ''
+
 if event == 'Submit':
     file_path = values[0]       # get the data from the values dictionary
     #print(file_path,event)
@@ -61,14 +63,14 @@ if event == 'Submit':
     window1.close()
     data = cursor.execute("SELECT * FROM %s" %tableName).fetchall()
     data=[list(i) for i in data]
-    numColumns = 4
+    numColumns = 5
     numRows = len(data)
     saveStatus = True
 elif event == 'New':
     saveStatus = False
-    data =[[1,'Enter Question', None, '[]']]
+    data =[[1,'Enter Question', None, '[]', 0.0]]
     numRows = 1
-    numColumns = 4
+    numColumns = 5
     tableName = None
     conn = None
     cursor =None
@@ -93,7 +95,7 @@ data
 #Layout of the table
 columm_layout =  [[sg.Multiline(str(data[i][j]),size=(30, 6), pad=(
         1, 1), key=(i, j)) for j in range(MAX_COL)] for i in range(MAX_ROWS)]
-col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters')]]
+col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters'), sg.Text('marks')]]
 col_layout.extend(columm_layout)
 
 #Layout of the table window
@@ -125,9 +127,9 @@ while True:
         break
     elif event == 'New':
         saveStatus = False
-        data =[[1,'Enter Question', None, '[]']]
+        data =[[1,'Enter Question', None, '[]', 0.0]]
         numRows = 1
-        numColumns = 4
+        numColumns = 5
         tableName = None
         MAX_ROWS = numRows
         MAX_COL = numColumns
@@ -135,7 +137,7 @@ while True:
         cursor = None
         columm_layout =  [[sg.Multiline(str(data[i][j]),size=(30, 6), pad=(
                 1, 1), key=(i, j)) for j in range(MAX_COL)] for i in range(MAX_ROWS)]
-        col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters')]]
+        col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters'), sg.Text('marks')]]
         col_layout.extend(columm_layout)
 
         #Layout of the table window
@@ -177,11 +179,11 @@ while True:
         inputData = []
         for i in range(MAX_ROWS):
             row = []
-            for j in range(4):
+            for j in range(MAX_COL):
                 InputText=""
                 for ch in values[(i,j)]:
                     InputText+=str(ch)
-                    if InputText == 'None':
+                    if InputText == 'None' or InputText == 0.0:
                         InputText = None
                 if j==0:
                     InputText=int(InputText)
@@ -210,7 +212,7 @@ while True:
                 1, 1), key=(i, 13)), sg.Stretch(),sg.Text(str(inputData[i][2]),size=(30, 6), pad=(
                         1, 1), key=(i, 14)),sg.Stretch(), sg.Text(str(inputData[i][3]),size=(30, 6), pad=(
                                 1, 1), key=(i, 15)),sg.Stretch()] for i in range(MAX_ROWS)]
-        col_layout1 = [[sg.Text('Question'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters')]]
+        col_layout1 = [[sg.Text('Question'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters'), sg.Text('marks')]]
         col_layout1.extend(columm_layout1)
 
         #Layout of the table window
@@ -244,7 +246,7 @@ while True:
                 #Layout of the table
                 columm_layout =  [[sg.Multiline(str(data[i][j]),size=(30, 6), pad=(
                         1, 1), key=(i, j)) for j in range(MAX_COL)] for i in range(MAX_ROWS)]
-                col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters')]]
+                col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters'), sg.Text('marks')]]
                 col_layout.extend(columm_layout)
 
                 #Layout of the table window
@@ -296,7 +298,7 @@ while True:
             #New layout with new data
             columm_layout =  [[sg.Multiline(str(data[i][j]),size=(30, 6), pad=(
                     1, 1), key=(i, j)) for j in range(MAX_COL)] for i in range(MAX_ROWS)]
-            col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters')]]
+            col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters'), sg.Text('marks')]]
             col_layout.extend(columm_layout)
             saveStatus = True
 
@@ -319,13 +321,13 @@ while True:
         data = []
         for i in range(MAX_ROWS):
             row = []
-            for j in range(4):
+            for j in range(MAX_COL):
                 InputText=""
                 #print(values[(i,j)])
                 for ch in values[(i,j)]:
                     #print(ch)
                     InputText+=str(ch)
-                    if InputText == 'None':
+                    if InputText == 'None' or InputText == 0.0:
                         InputText = None
                 if j==0:
                     InputText=int(InputText)
@@ -344,11 +346,11 @@ while True:
         ##print(type(json_list[-1][0]))
         for i in range(MAX_ROWS):
             data[i][3]=json_list[i]
-        data.append([max([ele[0] for ele in data])+1,'Enter Question', None, '[]'])
+        data.append([max([ele[0] for ele in data])+1,'Enter Question', None, '[]', 0.0])
         #print(data)
         columm_layout =  [[sg.Multiline(str(data[i][j]),size=(30, 6), pad=(
                 1, 1), key=(i, j)) for j in range(MAX_COL)] for i in range(MAX_ROWS+1)]
-        col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters')]]
+        col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters'), sg.Text('marks')]]
         col_layout.extend(columm_layout)
         #Layout of the table window
         layout = [[sg.Menu(menu_def)],[sg.Stretch()],
@@ -370,11 +372,11 @@ while True:
         inputData = []
         for i in range(MAX_ROWS):
             row = []
-            for j in range(4):
+            for j in range(MAX_COL):
                 InputText=""
                 for ch in values[(i,j)]:
                     InputText+=str(ch)
-                    if InputText == 'None':
+                    if InputText == 'None' or InputText == 0.0:
                         InputText = None
                 if j==0:
                     InputText=int(InputText)
@@ -401,13 +403,13 @@ while True:
                 1, 1), key=(i, 5)), sg.Stretch(),sg.Text(str(inputData[i][2]),size=(30, 6), pad=(
                         1, 1), key=(i, 11)),sg.Stretch(), sg.Text(str(inputData[i][3]),size=(30, 6), pad=(
                                 1, 1), key=(i, 10)),sg.Stretch()] for i in range(MAX_ROWS)]
-        col_layout1 = [[sg.Text('Question'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters')]]
+        col_layout1 = [[sg.Text('Question'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters'), sg.Text('marks')]]
         col_layout1.extend(columm_layout1)
 
         #Layout of the table window
         layout1 = [[sg.Menu(menu_def)],[sg.Stretch()],
                   [sg.Stretch(),sg.Col(col_layout1, size=(1000,750),scrollable=True),sg.Stretch()],[sg.Stretch()],
-                  [sg.Stretch(),sg.Checkbox('Select All', key='select_all'),sg.Stretch(), sg.Button('Generate'),sg.Stretch()] ]
+                  [sg.Stretch(),sg.Checkbox('Select All', key='select_all'),sg.Stretch(), sg.Button('Generate'),sg.Stretch(), sg.Checkbox('Randomize Order', key='randomOrder'),sg.Stretch()] ]
         window1 = sg.Window('Generate Question Paper', layout1, return_keyboard_events = True)
         while True:
             event2, values2 = window1.read()
@@ -423,21 +425,36 @@ while True:
                     for i in range(MAX_ROWS):
                         if values2[(i,6)]:
                             rows1.append(inputData[i])
+                    if values2['randomOrder']:
+                        rows1 = random.sample(rows1, len(rows1))
                     today = date.today()
                     d1 = today.strftime("%B %d, %Y")   #Date in "Month date, year" format
-                    qpText = '''--- \n title: Question Paper \n author: Roll No.- \n date: %s \n--- \n \n# Questions \n''' % d1
                     params = [ele[3] for ele in rows1]
                     #print(params)
+                    #<div style="text-align: right;"> your-text-here </div>
                     rows = [ele[1] for ele in rows1]
+                    marks = []
+                    for ele in rows1:
+                        if ele[4] is None:
+                            marks.append(0.0)
+                        else:
+                            marks.append(float(ele[4]))
+                    maxMarks = sum(marks)
+                    qpText = '''--- \n title: Question Paper (Maximum Marks - %s) \n author: Roll No.- \n date: %s \n--- \n \n# Questions \n<!--- Questions begin below. Do NOT edit the content below. To change the question content, please edit the table directly. To change the position of Maximum Marks, use only this expression: 'Maximum Marks -' -->\n''' %(maxMarks,d1)
+                    qpTextAlt = qpText
                     j=1
                     for i in range(0,len(rows)):
                         if len(params[i])>0:                #If paramaters are available
                             paramChosen.append(random.choice(params[i]))    #Appends a randomly chosen parameter to the global paramChosen list
                             temp = Template(rows[i])               #Creates a template using jinja2. rows[0][0] is assumed to have placeholders for the parameters
                             qpText+= "\n%d. %s \n" %(j,temp.render(paramChosen[-1]))    #Replaces the placeholders with paramater values and writes into file
+                            qpText+='<div style="text-align: right;"> [%s] </div>\n'%(marks[i])
+                            qpTextAlt+= "\n%d. (%s marks) %s \n" %(j,marks[i],temp.render(paramChosen[-1]))
 
                         else:          #If there are no parameters available
                             qpText+="\n%d. %s \n" %(j,rows[i])
+                            qpText+='<div style="text-align: right;"> [%s] </div>\n'%(marks[i])
+                            qpTextAlt+="\n%d. (%s marks) %s \n" %(j, marks[i],rows[i])
                         j+=1
                     j=1
                     SolText = '''--- \n title: Solutions \n---\n'''
@@ -524,28 +541,44 @@ while True:
                                     if event2== 'file_path':
                                         OPfile_path = values2['file_path'].split('.')[0]
                                         extensions = ['md', 'html', 'tex', 'pdf']
-                                        f = open(OPfile_path+'QP.md', 'w')
-                                        f.write(qpText)
+                                        f = open(OPfile_path+'QP.md', 'wb')
+#                                        qpHTML = pypandoc.convert_text(qpText, 'html', format='md', extra_args=['-s'])
+                                        f.write(qpText.encode('utf8'))
                                         f.close()
-                                        f = open(OPfile_path+'Sol.md', 'w')
-                                        f.write(SolText)
+                                        # global qpTextAlt
+#                                        print(qpTextAlt, qpText)
+                                        qpTextAlt = qpText.split('-->\n')[0]+'-->\n'+qpTextAlt.split('-->\n')[1]
+                                        f = open(OPfile_path+'QPAlt.md', 'wb')
+                                        #qpHTML = pypandoc.convert_text(qpTextAlt, 'html', format='md', extra_args=['-s'])
+                                        f.write(qpTextAlt.encode('utf8'))
+                                        f.close()
+                                        f = open(OPfile_path+'Sol.md', 'wb')
+                                        #SolHTML = pypandoc.convert_text(SolText, 'html', format='md', extra_args=['-s'])
+                                        f.write(SolText.encode('utf8'))
                                         f.close()
                                         file_paths=[]
                                         for i in range(3):
                                             if values6[(i+1,7)]:
                                                 try:
-                                                    pypandoc.convert_file(OPfile_path+'QP.md',extensions[i+1] ,outputfile=OPfile_path+'QP.'+extensions[i+1],  extra_args=['-s'])
+                                                    if i == 2 or i == 1:
+                                                        pypandoc.convert_file(OPfile_path+'QPAlt.md',extensions[i+1] ,outputfile=OPfile_path+'QP.'+extensions[i+1],  extra_args=['-s'])
+                                                    else:
+                                                        pypandoc.convert_file(OPfile_path+'QP.md',extensions[i+1] ,outputfile=OPfile_path+'QP.'+extensions[i+1],  extra_args=['-s'])
                                                     file_paths.append(OPfile_path+'QP.'+extensions[i+1])
                                                     #print(i+1)
                                                 except:
                                                     sg.popup('Couldn\'t generate a '+extensions[i+1]+' file. Check your pandoc or TeX installation' )
                                             if values6[(i+1,8)]:
                                                 try:
+                                                    # if i == 2:
+                                                    #     pypandoc.convert_file(OPfile_path+'Sol.html',extensions[i+1] ,outputfile=OPfile_path+'Sol.'+extensions[i+1],  extra_args=['-s', '--pdf-engine=context'])
+                                                    # else:
                                                     pypandoc.convert_file(OPfile_path+'Sol.md',extensions[i+1] ,outputfile=OPfile_path+'Sol.'+extensions[i+1],  extra_args=['-s'])
                                                     file_paths.append(OPfile_path+'Sol.'+extensions[i+1])
                                                     #print(i+1)
                                                 except:
                                                     sg.popup('Couldn\'t generate a '+extensions[i+1]+' file. Check your pandoc or TeX installation' )
+                                        os.remove(OPfile_path+'QPAlt.md')
                                         if not values6[(0,7)]:
                                             os.remove(OPfile_path+'QP.md')
                                         else:
@@ -566,23 +599,40 @@ while True:
                 else:
                     for i in range(MAX_ROWS):
                             rows1.append(inputData[i])
+                    if values2['randomOrder']:
+                        rows1 = random.sample(rows1, len(rows1))
                     today = date.today()
                     d1 = today.strftime("%B %d, %Y")   #Date in "Month date, year" format
-                    qpText = '''--- \n title: Question Paper \n author: Roll No.- \n date: %s \n--- \n \n# Questions \n''' % d1
                     params = [ele[3] for ele in rows1]
                     #print(params)
                     rows = [ele[1] for ele in rows1]
+                    marks = []
+                    # global qpTextAlt
+                    for ele in rows1:
+                        if ele[4] is None:
+                            marks.append(0.0)
+                        else:
+                            marks.append(float(ele[4]))
                     j=1
+                    maxMarks = sum(marks)
+                    qpText = '''--- \n title: Question Paper (Maximum Marks - %s) \n author: Roll No.- \n date: %s \n--- \n \n# Questions \n<!--- Questions begin below. Do NOT edit the content below. To change the question content, please edit the table directly. To change the position of Maximum Marks, use only this expression: 'Maximum Marks -' -->\n''' %(maxMarks,d1)
+                    qpTextAlt = qpText
                     for i in range(0,len(rows)):
                         if len(params[i])>0:                #If paramaters are available
                             paramChosen.append(random.choice(params[i]))    #Appends a randomly chosen parameter to the global paramChosen list
                             temp = Template(rows[i])               #Creates a template using jinja2. rows[0][0] is assumed to have placeholders for the parameters
                             qpText+= "\n%d. %s \n" %(j,temp.render(paramChosen[-1]))    #Replaces the placeholders with paramater values and writes into file
+                            qpText+='<div style="text-align: right;"> [%s] </div>\n'%(marks[i])
+                            qpTextAlt+= "\n%d. (%s marks) %s \n" %(j,marks[i],temp.render(paramChosen[-1]))
 
                         else:          #If there are no parameters available
                             qpText+="\n%d. %s \n" %(j,rows[i])
+                            qpText+='<div style="text-align: right;"> [%s] </div>\n'%(marks[i])
+                            qpTextAlt+="\n%d. (%s marks) %s \n" %(j, marks[i],rows[i])
                         j+=1
                     j=1
+                    # qpText = qpText.split('Maximum Marks :')[0]+ 'Maximum Marks : ' + str(maxMarks) + qpText.split('Maximum Marks :')[1]+ 'Maximum Marks : '+ qpText.split('Maximum Marks :')[2]
+                    # qpTextAlt = qpTextAlt.split('Maximum Marks :')[0]+ 'Maximum Marks : ' + str(maxMarks) + qpTextAlt.split('Maximum Marks :')[1]+ 'Maximum Marks : '+ qpText.split('Maximum Marks :')[2]
                     SolText = '''--- \n title: Solutions \n---\n'''
                     rows = [ele[2] for ele in rows1]
                     for i in range(0,len(rows)):
@@ -665,28 +715,44 @@ while True:
                                     if event2== 'file_path':
                                         OPfile_path = values2['file_path'].split('.')[0]
                                         extensions = ['md', 'html', 'tex', 'pdf']
-                                        f = open(OPfile_path+'QP.md', 'w')
-                                        f.write(qpText)
+                                        f = open(OPfile_path+'QP.md', 'wb')
+#                                        qpHTML = pypandoc.convert_text(qpText, 'html', format='md', extra_args=['-s'])
+                                        f.write(qpText.encode('utf8'))
                                         f.close()
-                                        f = open(OPfile_path+'Sol.md', 'w')
-                                        f.write(SolText)
+                                        # global qpTextAlt
+#                                        print(qpTextAlt, qpText)
+                                        qpTextAlt = qpText.split('-->\n')[0]+'-->\n'+qpTextAlt.split('-->\n')[1]
+                                        f = open(OPfile_path+'QPAlt.md', 'wb')
+                                        #qpHTML = pypandoc.convert_text(qpTextAlt, 'html', format='md', extra_args=['-s'])
+                                        f.write(qpTextAlt.encode('utf8'))
+                                        f.close()
+                                        f = open(OPfile_path+'Sol.md', 'wb')
+                                        #SolHTML = pypandoc.convert_text(SolText, 'html', format='md', extra_args=['-s'])
+                                        f.write(SolText.encode('utf8'))
                                         f.close()
                                         file_paths=[]
                                         for i in range(3):
                                             if values6[(i+1,7)]:
                                                 try:
-                                                    pypandoc.convert_file(OPfile_path+'QP.md',extensions[i+1] ,outputfile=OPfile_path+'QP.'+extensions[i+1],  extra_args=['-s'])
+                                                    if i == 2 or i == 1:
+                                                        pypandoc.convert_file(OPfile_path+'QPAlt.md',extensions[i+1] ,outputfile=OPfile_path+'QP.'+extensions[i+1],  extra_args=['-s'])
+                                                    else:
+                                                        pypandoc.convert_file(OPfile_path+'QP.md',extensions[i+1] ,outputfile=OPfile_path+'QP.'+extensions[i+1],  extra_args=['-s'])
                                                     file_paths.append(OPfile_path+'QP.'+extensions[i+1])
                                                     #print(i+1)
                                                 except:
                                                     sg.popup('Couldn\'t generate a '+extensions[i+1]+' file. Check your pandoc or TeX installation' )
                                             if values6[(i+1,8)]:
                                                 try:
+                                                    # if i == 2:
+                                                    #     pypandoc.convert_file(OPfile_path+'Sol.html',extensions[i+1] ,outputfile=OPfile_path+'Sol.'+extensions[i+1],  extra_args=['-s', '--pdf-engine=context'])
+                                                    # else:
                                                     pypandoc.convert_file(OPfile_path+'Sol.md',extensions[i+1] ,outputfile=OPfile_path+'Sol.'+extensions[i+1],  extra_args=['-s'])
                                                     file_paths.append(OPfile_path+'Sol.'+extensions[i+1])
                                                     #print(i+1)
                                                 except:
                                                     sg.popup('Couldn\'t generate a '+extensions[i+1]+' file. Check your pandoc or TeX installation' )
+                                        os.remove(OPfile_path+'QPAlt.md')
                                         if not values6[(0,7)]:
                                             os.remove(OPfile_path+'QP.md')
                                         else:
@@ -710,7 +776,7 @@ while True:
         window1.close()
         columm_layout =  [[sg.Multiline(str(inputData[i][j]),size=(30, 6), pad=(
                 1, 1), key=(i, j)) for j in range(MAX_COL)] for i in range(MAX_ROWS)]
-        col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters')]]
+        col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters'), sg.Text('marks')]]
         col_layout.extend(columm_layout)
         #Layout of the table window
         layout = [[sg.Menu(menu_def)],[sg.Stretch()],
@@ -731,11 +797,11 @@ while True:
         inputData = []
         for i in range(MAX_ROWS):
             row = []
-            for j in range(4):
+            for j in range(MAX_COL):
                 InputText=""
                 for ch in values[(i,j)]:
                     InputText+=str(ch)
-                    if InputText == 'None':
+                    if InputText == 'None' or InputText == 0.0:
                         InputText = None
                 if j==0:
                     InputText=int(InputText)
@@ -764,9 +830,9 @@ while True:
             if tableName is not None:
                 cursor.execute("DELETE FROM "+ tableName)
                 for i in range(MAX_ROWS):
-                    sqlCommand = "INSERT INTO "+ tableName +" (qno, question_text, answers, parameters) VALUES(?, ?, ?, ?)"
-                    params = (inputData[i][0], inputData[i][1], inputData[i][2], json.dumps(inputData[i][3]))
-                    cursor.execute(sqlCommand,(inputData[i][0], inputData[i][1], inputData[i][2], json.dumps(inputData[i][3])))#.format(tableName,inputData[i][0],inputData[i][1],inputData[i][2]))#,inputData[i][3]))
+                    sqlCommand = "INSERT INTO "+ tableName +" (qno, question_text, answers, parameters, marks) VALUES(?, ?, ?, ?, ?)"
+                    params = (inputData[i][0], inputData[i][1], inputData[i][2], json.dumps(inputData[i][3]), inputData[i][4])
+                    cursor.execute(sqlCommand,(inputData[i][0], inputData[i][1], inputData[i][2], json.dumps(inputData[i][3]), inputData[i][4]))#.format(tableName,inputData[i][0],inputData[i][1],inputData[i][2]))#,inputData[i][3]))
                     conn.commit()
             else:
                 layout2 = [[
@@ -799,14 +865,14 @@ while True:
                             cursor.execute("DELETE FROM "+ tableName)
                     except:
                         pass
-                    cursor.execute("CREATE TABLE IF NOT EXISTS "+tableName+" ( qno INTEGER PRIMARY KEY, question_text TEXT NOT NULL, answers TEXT, parameters JSON);")
-                    numColumns = 4
+                    cursor.execute("CREATE TABLE IF NOT EXISTS "+tableName+" ( qno INTEGER PRIMARY KEY, question_text TEXT NOT NULL, answers TEXT, parameters JSON, marks REAL);")
+                    numColumns = 5
                     numRows = len(data)
                     MAX_ROWS = numRows
                     for i in range(MAX_ROWS):
-                        sqlCommand = "INSERT INTO "+ tableName +" (qno, question_text, answers, parameters) VALUES(?, ?, ?, ?)"
-                        params = (inputData[i][0], inputData[i][1], inputData[i][2], json.dumps(inputData[i][3]))
-                        cursor.execute(sqlCommand,(inputData[i][0], inputData[i][1], inputData[i][2], json.dumps(inputData[i][3])))#.format(tableName,inputData[i][0],inputData[i][1],inputData[i][2]))#,inputData[i][3]))
+                        sqlCommand = "INSERT INTO "+ tableName +" (qno, question_text, answers, parameters, marks) VALUES(?, ?, ?, ?, ?)"
+                        params = (inputData[i][0], inputData[i][1], inputData[i][2], json.dumps(inputData[i][3]), inputData[i][4])
+                        cursor.execute(sqlCommand,(inputData[i][0], inputData[i][1], inputData[i][2], json.dumps(inputData[i][3]), inputData[i][4]))#.format(tableName,inputData[i][0],inputData[i][1],inputData[i][2]))#,inputData[i][3]))
                         conn.commit()
             saveStatus = True
         except sqlite3.Error as e:
@@ -815,7 +881,7 @@ while True:
             saveStatus = False
         columm_layout =  [[sg.Multiline(str(data[i][j]),size=(30, 6), pad=(
                 1, 1), key=(i, j)) for j in range(MAX_COL)] for i in range(MAX_ROWS)]
-        col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters')]]
+        col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters'), sg.Text('marks')]]
         col_layout.extend(columm_layout)
 
         #Layout of the table window
@@ -835,11 +901,11 @@ while True:
         inputData = []
         for i in range(MAX_ROWS):
             row = []
-            for j in range(4):
+            for j in range(MAX_COL):
                 InputText=""
                 for ch in values[(i,j)]:
                     InputText+=str(ch)
-                    if InputText == 'None':
+                    if InputText == 'None' or InputText == 0.0:
                         InputText = None
                 if j==0:
                     InputText=int(InputText)
@@ -892,17 +958,17 @@ while True:
                 cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
                 try:
                     if tableName == cursor.fetchall()[0][0]:
-                        cursor.execute("DELETE FROM "+ tableName)
+                        cursor.execute("DROP TABLE "+ tableName)
                 except:
                     pass
-                cursor.execute("CREATE TABLE IF NOT EXISTS "+tableName+" ( qno INTEGER PRIMARY KEY, question_text TEXT NOT NULL, answers TEXT, parameters JSON);")
-                numColumns = 4
+                cursor.execute("CREATE TABLE IF NOT EXISTS "+tableName+" ( qno INTEGER PRIMARY KEY, question_text TEXT NOT NULL, answers TEXT, parameters JSON, marks REAL);")
+                numColumns = 5
                 numRows = len(data)
                 MAX_ROWS = numRows
                 for i in range(MAX_ROWS):
-                    sqlCommand = "INSERT INTO "+ tableName +" (qno, question_text, answers, parameters) VALUES(?, ?, ?, ?)"
-                    params = (inputData[i][0], inputData[i][1], inputData[i][2], json.dumps(inputData[i][3]))
-                    cursor.execute(sqlCommand,(inputData[i][0], inputData[i][1], inputData[i][2], json.dumps(inputData[i][3])))#.format(tableName,inputData[i][0],inputData[i][1],inputData[i][2]))#,inputData[i][3]))
+                    sqlCommand = "INSERT INTO "+ tableName +" (qno, question_text, answers, parameters, marks) VALUES(?, ?, ?, ?, ?)"
+                    params = (inputData[i][0], inputData[i][1], inputData[i][2], json.dumps(inputData[i][3]), inputData[i][4])
+                    cursor.execute(sqlCommand,(inputData[i][0], inputData[i][1], inputData[i][2], json.dumps(inputData[i][3]), inputData[i][4]))#.format(tableName,inputData[i][0],inputData[i][1],inputData[i][2]))#,inputData[i][3]))
                     conn.commit()
             saveStatus =True
         except sqlite3.Error as e:
@@ -913,7 +979,7 @@ while True:
 
         columm_layout =  [[sg.Multiline(str(data[i][j]),size=(30, 6), pad=(
                 1, 1), key=(i, j)) for j in range(MAX_COL)] for i in range(MAX_ROWS)]
-        col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters')]]
+        col_layout = [[sg.Text('qno'),sg.Text('question_text'),sg.Text('answers'),sg.Text('parameters'), sg.Text('marks')]]
         col_layout.extend(columm_layout)
 
 
